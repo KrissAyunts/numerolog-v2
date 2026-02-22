@@ -1,4 +1,30 @@
-console.log('Script loaded! Version 6.0 (Production)');
+console.log('Script loaded! Version 7.0 (Production)');
+
+// ============================================================
+// Валидация даты: ДД.ММ.ГГГГ
+// Возвращает null если всё ок, или строку ошибки
+// ============================================================
+function validateDate(str) {
+    const regex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+    if (!regex.test(str)) return 'Введите дату в формате ДД.ММ.ГГГГ';
+
+    const [, dd, mm, yyyy] = str.match(regex);
+    const d = parseInt(dd, 10);
+    const m = parseInt(mm, 10);
+    const y = parseInt(yyyy, 10);
+
+    if (m < 1 || m > 12) return 'Месяц должен быть от 01 до 12';
+    if (d < 1 || d > 31) return 'День должен быть от 01 до 31';
+    if (y < 1900 || y > 2025) return 'Год должен быть от 1900 до 2025';
+
+    // Проверяем реальное существование даты
+    const date = new Date(y, m - 1, d);
+    if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+        return `Дата ${dd}.${mm}.${yyyy} не существует`;
+    }
+
+    return null; // всё ок
+}
 
 // ---- Date mask: ДД.ММ.ГГГГ (global, before DOMContentLoaded) ----
 function applyDateMask(input) {
@@ -262,27 +288,29 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleMainCalculate(e) {
         if (e) e.preventDefault();
 
-        const val = birthdateInput.value;
-        const regex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+        const input = modalBody.querySelector('#birthdate') || birthdateInput;
+        const val = input ? input.value : (birthdateInput ? birthdateInput.value : '');
 
-        if (!regex.test(val)) {
-            dateError.textContent = 'Введите полные данные: ДД.ММ.ГГГГ';
-            birthdateInput.style.borderColor = '#ef4444';
-            return;
-        }
-
-        const [_, d, m, y] = val.match(regex);
-        if (d > 31 || m > 12) {
-            dateError.textContent = 'Некорректная дата';
+        // Строгая валидация
+        const err = validateDate(val);
+        if (err) {
+            if (dateError) {
+                dateError.textContent = err;
+                if (birthdateInput) birthdateInput.style.borderColor = '#ef4444';
+                if (input) input.style.borderColor = '#ef4444';
+            } else {
+                alert(err);
+            }
             return;
         }
 
         try {
             const results = calculateNumerology(val);
+            if (birthdateInput) birthdateInput.value = val; // синх значения если вызвано из модала
             renderResults(results);
-        } catch (err) {
-            console.error(err);
-            alert('Ошибка расчета: ' + err.message);
+        } catch (calcErr) {
+            console.error(calcErr);
+            alert('Ошибка расчета: ' + calcErr.message);
         }
     }
 
@@ -429,8 +457,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const d1 = inputs[0].value;
             const d2 = inputs[1].value;
 
-            if (!/^\d{2}\.\d{2}\.\d{4}$/.test(d1) || !/^\d{2}\.\d{2}\.\d{4}$/.test(d2)) {
-                alert('Пожалуйста, введите корректные даты рождения обоих партнеров (ДД.ММ.ГГГГ)');
+            const errD1 = validateDate(d1);
+            const errD2 = validateDate(d2);
+            if (errD1 || errD2) {
+                const msgs = [];
+                if (errD1) msgs.push('Партнёр 1: ' + errD1);
+                if (errD2) msgs.push('Партнёр 2: ' + errD2);
+                alert(msgs.join('\n'));
                 return;
             }
 
@@ -501,9 +534,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const dMom = inputs[1].value;
             const dDad = inputs[2].value; // Optional
 
-            if (!/^\d{2}\.\d{2}\.\d{4}$/.test(dChild) || !/^\d{2}\.\d{2}\.\d{4}$/.test(dMom)) {
-                alert('Пожалуйста, введите корректные даты рождения Ребенка и Мамы (ДД.ММ.ГГГГ)');
+            const errChild = validateDate(dChild);
+            const errMom = validateDate(dMom);
+            if (errChild || errMom) {
+                const msgs = [];
+                if (errChild) msgs.push('Ребёнок: ' + errChild);
+                if (errMom) msgs.push('Мама: ' + errMom);
+                alert(msgs.join('\n'));
                 return;
+            }
+            // Папа необязателен, но если заполнен — проверяем
+            if (dDad && dDad.length === 10) {
+                const errDad = validateDate(dDad);
+                if (errDad) { alert('Папа: ' + errDad); return; }
             }
 
             const pChild = calculateNumerology(dChild);
