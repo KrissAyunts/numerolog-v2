@@ -1,4 +1,38 @@
-console.log('Script loaded! Version 5.0 (Production)');
+console.log('Script loaded! Version 6.0 (Production)');
+
+// ---- Date mask: ДД.ММ.ГГГГ (global, before DOMContentLoaded) ----
+function applyDateMask(input) {
+    let raw = input.value.replace(/\D/g, '');
+    if (raw.length > 8) raw = raw.slice(0, 8);
+
+    let masked = '';
+    if (raw.length <= 2) {
+        masked = raw;
+    } else if (raw.length <= 4) {
+        masked = raw.slice(0, 2) + '.' + raw.slice(2);
+    } else {
+        masked = raw.slice(0, 2) + '.' + raw.slice(2, 4) + '.' + raw.slice(4);
+    }
+
+    if (input.value !== masked) {
+        input.value = masked;
+    }
+}
+
+// Делегирование на document — работает для всех input’ов,
+// включая динамически добавленные в модальном окне
+document.addEventListener('input', function (e) {
+    const inp = e.target;
+    if (inp.tagName !== 'INPUT' || inp.type !== 'text') return;
+    if (e.inputType === 'insertReplacementText') return; // автозаполнение
+    applyDateMask(inp);
+});
+
+document.addEventListener('paste', function (e) {
+    const inp = e.target;
+    if (inp.tagName !== 'INPUT' || inp.type !== 'text') return;
+    setTimeout(() => applyDateMask(inp), 0);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM ready v5.0');
@@ -32,6 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Show modal
         modal.classList.add('active');
+
+        // Применяем маску ко всем инпутам в модале (страховка)
+        modalBody.querySelectorAll('input[type="text"]').forEach(inp => {
+            inp.addEventListener('input', function () {
+                if (this.value) applyDateMask(this);
+            });
+        });
     };
 
     // Close modal
@@ -213,54 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // ---- Date mask: ДД.ММ.ГГГГ ----------------------------
-    // Работает через делегирование — ловит все input[type=text],
-    // включая динамически созданные в модалке.
 
-    function applyDateMask(input) {
-        const pos = input.selectionStart;
-        let raw = input.value.replace(/\D/g, ''); // только цифры
-        if (raw.length > 8) raw = raw.slice(0, 8);
 
-        let masked = '';
-        if (raw.length <= 2) {
-            masked = raw;
-        } else if (raw.length <= 4) {
-            masked = raw.slice(0, 2) + '.' + raw.slice(2);
-        } else {
-            masked = raw.slice(0, 2) + '.' + raw.slice(2, 4) + '.' + raw.slice(4);
-        }
-
-        if (input.value !== masked) {
-            input.value = masked;
-            // Восстанавливаем позицию курсора
-            const dotsBefore = (masked.slice(0, pos).match(/\./g) || []).length;
-            const dotsNow = (masked.slice(0, pos).match(/\./g) || []).length;
-            try { input.setSelectionRange(pos + dotsNow - dotsBefore, pos + dotsNow - dotsBefore); } catch (_) { }
-        }
-    }
-
-    // Делегирование: перехватываем input-события для всех текстовых полей
-    document.addEventListener('input', function (e) {
-        const inp = e.target;
-        if (inp.tagName !== 'INPUT' || inp.type !== 'text') return;
-
-        // Пропускаем автозаполнение браузера (вставляет сразу готовый текст)
-        if (e.inputType === 'insertReplacementText') return;
-
-        applyDateMask(inp);
-
-        // Сбрасываем маркер ошибки если в форме
-        if (dateError) dateError.textContent = '';
-        inp.style.borderColor = 'var(--glass-border)';
-    });
-
-    // Обрабатываем вставку (Ctrl+V / мобильная вставка) после небольшой задержки
-    document.addEventListener('paste', function (e) {
-        const inp = e.target;
-        if (inp.tagName !== 'INPUT' || inp.type !== 'text') return;
-        setTimeout(() => applyDateMask(inp), 0);
-    });
 
     // --- Main Calculation Handler ---
 
