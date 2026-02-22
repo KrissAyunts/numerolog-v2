@@ -213,36 +213,53 @@ document.addEventListener('DOMContentLoaded', () => {
         resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function formatAndValidateInput(e) {
-        // Allow browser autocomplete to work by not fighting it on every keystroke if it's a massive change (paste/autofill)
-        // But for typing we want masks.
+    // ---- Date mask: ДД.ММ.ГГГГ ----------------------------
+    // Работает через делегирование — ловит все input[type=text],
+    // включая динамически созданные в модалке.
 
-        // Simple fix: if inputType is undefined (often autofill), skip or handle gently.
-        // Actually, easiest way to enable history is to add name/autocomplete attributes in HTML.
+    function applyDateMask(input) {
+        const pos = input.selectionStart;
+        let raw = input.value.replace(/\D/g, ''); // только цифры
+        if (raw.length > 8) raw = raw.slice(0, 8);
 
-        if (e.inputType === 'insertReplacementText' || !e.inputType) {
-            // Likely autofill
-            return;
+        let masked = '';
+        if (raw.length <= 2) {
+            masked = raw;
+        } else if (raw.length <= 4) {
+            masked = raw.slice(0, 2) + '.' + raw.slice(2);
+        } else {
+            masked = raw.slice(0, 2) + '.' + raw.slice(2, 4) + '.' + raw.slice(4);
         }
 
-        if (e.inputType !== 'deleteContentBackward') {
-            let val = e.target.value.replace(/\D/g, '');
-            if (val.length > 8) val = val.slice(0, 8);
-
-            if (val.length >= 5) {
-                val = val.slice(0, 2) + '.' + val.slice(2, 4) + '.' + val.slice(4);
-            } else if (val.length >= 3) {
-                val = val.slice(0, 2) + '.' + val.slice(2);
-            }
-            e.target.value = val;
+        if (input.value !== masked) {
+            input.value = masked;
+            // Восстанавливаем позицию курсора
+            const dotsBefore = (masked.slice(0, pos).match(/\./g) || []).length;
+            const dotsNow = (masked.slice(0, pos).match(/\./g) || []).length;
+            try { input.setSelectionRange(pos + dotsNow - dotsBefore, pos + dotsNow - dotsBefore); } catch (_) { }
         }
-        if (dateError) dateError.textContent = '';
-        e.target.style.borderColor = 'var(--glass-border)';
     }
 
-    // Attach Input Formatter to ALL inputs
-    document.querySelectorAll('input').forEach(inp => {
-        inp.addEventListener('input', formatAndValidateInput);
+    // Делегирование: перехватываем input-события для всех текстовых полей
+    document.addEventListener('input', function (e) {
+        const inp = e.target;
+        if (inp.tagName !== 'INPUT' || inp.type !== 'text') return;
+
+        // Пропускаем автозаполнение браузера (вставляет сразу готовый текст)
+        if (e.inputType === 'insertReplacementText') return;
+
+        applyDateMask(inp);
+
+        // Сбрасываем маркер ошибки если в форме
+        if (dateError) dateError.textContent = '';
+        inp.style.borderColor = 'var(--glass-border)';
+    });
+
+    // Обрабатываем вставку (Ctrl+V / мобильная вставка) после небольшой задержки
+    document.addEventListener('paste', function (e) {
+        const inp = e.target;
+        if (inp.tagName !== 'INPUT' || inp.type !== 'text') return;
+        setTimeout(() => applyDateMask(inp), 0);
     });
 
     // --- Main Calculation Handler ---
