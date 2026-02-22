@@ -8,25 +8,38 @@
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    let W, H, stars = [];
+    // Canvas фиксирован на весь viewport
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '0';
+
+    let W, H, stars = [], shooters = [];
+    let scrollY = 0;
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
 
     function resize() {
         W = canvas.width = window.innerWidth;
-        H = canvas.height = document.body.scrollHeight;
+        H = canvas.height = window.innerHeight;
     }
 
-    function Star() {
-        this.reset();
-    }
-    Star.prototype.reset = function () {
+    // ---- Обычные звёзды ----
+    function Star() { this.reset(true); }
+    Star.prototype.reset = function (initial) {
         this.x = Math.random() * W;
-        this.y = Math.random() * H;
-        this.r = Math.random() * 1.4 + 0.2;
-        this.a = Math.random();
-        this.da = (Math.random() - 0.5) * 0.004;
-        this.dx = (Math.random() - 0.5) * 0.12;
-        this.dy = (Math.random() - 0.5) * 0.12;
-        this.hue = Math.random() > 0.7 ? 270 : 190; // purple or cyan
+        this.y = initial ? Math.random() * H : Math.random() * H;
+        this.r = Math.random() * 1.6 + 0.2;
+        // Мигание через синусоиду
+        this.phase = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 0.018 + 0.006;   // скорость мигания
+        this.base = Math.random() * 0.4 + 0.2;        // минимальная яркость
+        this.amp = Math.random() * 0.5 + 0.2;        // амплитуда
+        // Очень медленный дрейф
+        this.vx = (Math.random() - 0.5) * 0.06;
+        this.vy = (Math.random() - 0.5) * 0.06;
+        this.hue = Math.random() > 0.65 ? 270 : Math.random() > 0.5 ? 190 : 220;
+        this.sat = Math.random() > 0.5 ? 80 : 0;  // часть звёзд белые
     };
 
     function initStars(n) {
@@ -34,28 +47,104 @@
         for (let i = 0; i < n; i++) stars.push(new Star());
     }
 
-    function draw() {
+    // ---- Падающие звёзды ----
+    function Shooter() { this.init(); }
+    Shooter.prototype.init = function () {
+        this.x = Math.random() * W * 1.2 - W * 0.1;
+        this.y = Math.random() * H * 0.4;
+        const angle = Math.PI / 5 + Math.random() * 0.3;  // ~36-53°
+        const spd = 6 + Math.random() * 6;
+        this.vx = Math.cos(angle) * spd;
+        this.vy = Math.sin(angle) * spd;
+        this.len = 80 + Math.random() * 120;
+        this.life = 1;
+        this.decay = 0.018 + Math.random() * 0.012;
+    };
+
+    let lastShooterTime = 0;
+
+    function spawnShooter(now) {
+        if (now - lastShooterTime > 3500 + Math.random() * 4000) {
+            shooters.push(new Shooter());
+            lastShooterTime = now;
+        }
+    }
+
+    // ---- Рендер ----
+    let t = 0;
+    function draw(now) {
         ctx.clearRect(0, 0, W, H);
+
+        // Параллакс: сдвигаем звёзды чуть-чуть при скролле
+        const parallaxOffset = scrollY * 0.04;
+
+        // Обычные звёзды
         stars.forEach(s => {
-            s.a += s.da;
-            if (s.a <= 0 || s.a >= 1) s.da *= -1;
-            s.x += s.dx;
-            s.y += s.dy;
-            if (s.x < 0 || s.x > W || s.y < 0 || s.y > H) s.reset();
+            s.phase += s.speed;
+            const alpha = s.base + s.amp * Math.sin(s.phase);
+
+            s.x += s.vx;
+            s.y += s.vy;
+            if (s.x < -2 || s.x > W + 2 || s.y < -2 || s.y > H + 2) s.reset(false);
+
+            const drawY = (s.y - parallaxOffset % H + H) % H;
 
             ctx.beginPath();
-            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fillStyle = `hsla(${s.hue}, 90%, 80%, ${s.a})`;
+            ctx.arc(s.x, drawY, s.r, 0, Math.PI * 2);
+
+            if (s.r > 1.2) {
+                // Яркие звёзды — с лёгким свечением
+                const grd = ctx.createRadialGradient(s.x, drawY, 0, s.x, drawY, s.r * 3);
+                grd.addColorStop(0, `hsla(${s.hue}, ${s.sat}%, 95%, ${alpha})`);
+                grd.addColorStop(1, `hsla(${s.hue}, ${s.sat}%, 80%, 0)`);
+                ctx.fillStyle = grd;
+                ctx.arc(s.x, drawY, s.r * 3, 0, Math.PI * 2);
+            } else {
+                ctx.fillStyle = `hsla(${s.hue}, ${s.sat}%, 90%, ${alpha})`;
+            }
             ctx.fill();
         });
+
+        // Падающие звёзды
+        spawnShooter(now);
+        shooters = shooters.filter(sh => sh.life > 0);
+        shooters.forEach(sh => {
+            sh.x += sh.vx;
+            sh.y += sh.vy;
+            sh.life -= sh.decay;
+
+            const tailX = sh.x - sh.vx * (sh.len / 8);
+            const tailY = sh.y - sh.vy * (sh.len / 8);
+
+            const grad = ctx.createLinearGradient(tailX, tailY, sh.x, sh.y);
+            grad.addColorStop(0, `rgba(255,255,255,0)`);
+            grad.addColorStop(1, `rgba(200,180,255,${sh.life * 0.9})`);
+
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(sh.x, sh.y);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Голова звезды
+            ctx.beginPath();
+            ctx.arc(sh.x, sh.y, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${sh.life})`;
+            ctx.fill();
+        });
+
+        t++;
         requestAnimationFrame(draw);
     }
 
     resize();
-    initStars(200);
-    draw();
-    window.addEventListener('resize', () => { resize(); initStars(200); });
+    initStars(220);
+    requestAnimationFrame(draw);
+    window.addEventListener('resize', () => { resize(); initStars(220); });
 })();
+
+
 
 
 /* ---- 2. Scroll-Reveal (Intersection Observer) -------------- */
