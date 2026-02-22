@@ -28,8 +28,15 @@
     }
 
     /* Hero — фото меньше */
+    .hero-image {
+        width: 100%;
+        max-width: 300px !important;
+        margin: 0 auto;
+    }
+
     .hero-image img {
-        max-width: 280px !important;
+        width: 100% !important;
+        max-width: 100% !important;
         margin: 0 auto;
         display: block;
     }
