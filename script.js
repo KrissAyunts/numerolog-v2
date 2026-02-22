@@ -623,143 +623,165 @@ document.addEventListener('DOMContentLoaded', () => {
         newKBtn.addEventListener('click', handleKidsSubmit);
     }
 
+    // ---- Показ ошибки прямо внутри модалки ---------------------
+    function showModalError(msg) {
+        let errEl = modalBody.querySelector('.modal-error-msg');
+        if (!errEl) {
+            errEl = document.createElement('p');
+            errEl.className = 'modal-error-msg';
+            errEl.style.cssText = 'color:#f87171;font-size:.9rem;margin-top:.75rem;text-align:center;font-weight:500;';
+            modalBody.appendChild(errEl);
+        }
+        errEl.textContent = msg;
+        // Подсветить все инпуты красным
+        modalBody.querySelectorAll('input[type="text"]').forEach(inp => {
+            if (!validateDate(inp.value)) inp.style.borderColor = '#ef4444';
+        });
+    }
+
+    function clearModalError() {
+        const errEl = modalBody.querySelector('.modal-error-msg');
+        if (errEl) errEl.textContent = '';
+        modalBody.querySelectorAll('input[type="text"]').forEach(inp => {
+            inp.style.borderColor = '';
+        });
+    }
+
     // Handle modal form submissions with delegation
     modal.addEventListener('submit', function (e) {
         const formType = modalBody.dataset.formType;
+        e.preventDefault();
+        clearModalError();
 
+        // ---------- Матрица ----------
         if (formType === 'matrixFormContainer') {
-            e.preventDefault();
             const input = modalBody.querySelector('#birthdate');
-            if (input && birthdateInput) {
-                birthdateInput.value = input.value;
-                handleMainCalculate(e);
-                closeModal();
+            const val = input ? input.value : '';
+            const err = validateDate(val);
+            if (err) {
+                showModalError(err);
+                return; // НЕ закрываем модалку
             }
+            // Валидация прошла — считаем
+            if (birthdateInput) birthdateInput.value = val;
+            try {
+                const results = calculateNumerology(val);
+                renderResults(results);
+                closeModal(); // закрываем только при успехе
+            } catch (ex) {
+                showModalError('Ошибка расчёта: ' + ex.message);
+            }
+
+            // ---------- Совместимость ----------
         } else if (formType === 'compatFormContainer') {
-            e.preventDefault();
             const inputs = modalBody.querySelectorAll('input');
-            if (inputs.length >= 2) {
-                const d1 = inputs[0].value;
-                const d2 = inputs[1].value;
-
-                if (!/^\d{2}\.\d{2}\.\d{4}$/.test(d1) || !/^\d{2}\.\d{2}\.\d{4}$/.test(d2)) {
-                    alert('Пожалуйста, введите корректные даты рождения обоих партнеров (ДД.ММ.ГГГГ)');
-                    return;
-                }
-
-                const res = calculateCompatibilityScore(d1, d2);
-                const resultBlock = document.getElementById('compatResult');
-                if (resultBlock) {
-                    resultBlock.classList.remove('hidden');
-                    document.getElementById('compatScoreValue').textContent = res.score + '%';
-
-                    const grid = document.getElementById('compatDetailsGrid');
-                    if (grid) {
-                        grid.innerHTML = '';
-                        res.reasons.forEach(item => {
-                            const block = document.createElement('div');
-                            block.className = 'detail-block';
-
-                            const h4 = document.createElement('h4');
-                            h4.textContent = item.title;
-
-                            const pctBadge = document.createElement('span');
-                            pctBadge.className = 'pct-badge';
-                            pctBadge.textContent = item.percentage + '%';
-
-                            const p = document.createElement('p');
-                            p.textContent = item.text;
-
-                            block.appendChild(h4);
-                            block.appendChild(pctBadge);
-                            block.appendChild(p);
-                            grid.appendChild(block);
-                        });
-                    }
-
-
-
-                    renderCTA(resultBlock);
-                    closeModal();
-                    resultBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+            const d1 = inputs[0] ? inputs[0].value : '';
+            const d2 = inputs[1] ? inputs[1].value : '';
+            const errD1 = validateDate(d1);
+            const errD2 = validateDate(d2);
+            if (errD1 || errD2) {
+                const msgs = [];
+                if (errD1) msgs.push('Партнёр 1: ' + errD1);
+                if (errD2) msgs.push('Партнёр 2: ' + errD2);
+                showModalError(msgs.join(' | '));
+                return;
             }
-        } else if (formType === 'kidsFormContainer') {
-            e.preventDefault();
-            const inputs = modalBody.querySelectorAll('input');
-            if (inputs.length >= 2) {
-                const dChild = inputs[0].value;
-                const dMom = inputs[1].value;
-                const dDad = inputs[2] ? inputs[2].value : '';
-
-                if (!/^\d{2}\.\d{2}\.\d{4}$/.test(dChild) || !/^\d{2}\.\d{2}\.\d{4}$/.test(dMom)) {
-                    alert('Пожалуйста, введите корректные даты рождения Ребенка и Мамы (ДД.ММ.ГГГГ)');
-                    return;
-                }
-
-                const pChild = calculateNumerology(dChild);
-                const pMom = calculateNumerology(dMom);
-
-                const kidsResult = document.getElementById('kidsResult');
-                if (kidsResult) {
-                    kidsResult.classList.remove('hidden');
-
-                    document.getElementById('kidsChildFate').textContent = `(ЧС: ${pChild.fateNumber})`;
-                    const c1 = pChild.matrix[1];
-                    let childText = (c1 > 2) ? "Яркий характер. Этот ребенок — будущий лидер, стремится к самостоятельности." : "Мягкий характер. Добрый, исполнительный ребенок, избегает конфликтов.";
-                    document.getElementById('kidsChildText').textContent = childText;
-
-                    document.getElementById('kidsMomFate').textContent = `(ЧС: ${pMom.fateNumber})`;
-                    const momList = document.getElementById('kidsMomText');
-                    momList.innerHTML = '';
-
-                    const m1 = pMom.matrix[1];
-                    const mItems = [];
-
-                    if (c1 > 2 && m1 > 2) mItems.push("Два лидера: Не давите авторитетом, учитесь договариваться как с равным.");
-                    else if (c1 <= 2 && m1 > 2) mItems.push("Гармония: Мама-лидер легко направляет ребенка, он чувствует опору.");
-                    else if (c1 > 2 && m1 <= 2) mItems.push("Внимание: Ребенок может манипулировать. Важно мягко, но твердо держать границы.");
-                    else mItems.push("Дружеский союз: Отношения строятся на доверии и мягкости.");
-
-                    const c2 = pChild.matrix[2];
-                    const m2 = pMom.matrix[2];
-                    if (m2 < 2 && c2 > 2) mItems.push("Энергия: Ребенок — 'ураган'. Маме важно находить время на отдых, чтобы не выгорать.");
-                    else if (m2 > 2 && c2 < 2) mItems.push("Поддержка: Мама служит энергетическим донором, рядом с ней ребенок успокаивается.");
-
-                    mItems.forEach(txt => {
-                        const li = document.createElement('li');
-                        li.textContent = txt;
-                        momList.appendChild(li);
+            const res = calculateCompatibilityScore(d1, d2);
+            const resultBlock = document.getElementById('compatResult');
+            if (resultBlock) {
+                resultBlock.classList.remove('hidden');
+                document.getElementById('compatScoreValue').textContent = res.score + '%';
+                const grid = document.getElementById('compatDetailsGrid');
+                if (grid) {
+                    grid.innerHTML = '';
+                    res.reasons.forEach(item => {
+                        const block = document.createElement('div');
+                        block.className = 'detail-block';
+                        const h4 = document.createElement('h4');
+                        h4.innerHTML = `${item.title} <span class="pct-badge">${item.percentage}%</span>`;
+                        const pBarBg = document.createElement('div');
+                        pBarBg.className = 'compat-bar-bg';
+                        const pBarFill = document.createElement('div');
+                        pBarFill.className = 'compat-bar-fill';
+                        pBarFill.style.width = item.percentage + '%';
+                        if (item.percentage >= 75) pBarFill.style.backgroundColor = '#10b981';
+                        else if (item.percentage >= 50) pBarFill.style.backgroundColor = '#f59e0b';
+                        else pBarFill.style.backgroundColor = '#ef4444';
+                        pBarBg.appendChild(pBarFill);
+                        const p = document.createElement('p');
+                        p.textContent = item.text;
+                        block.appendChild(h4);
+                        block.appendChild(pBarBg);
+                        block.appendChild(p);
+                        grid.appendChild(block);
                     });
-
-                    const dadBlock = document.getElementById('kidsDadBlock');
-                    if (dDad && /^\d{2}\.\d{2}\.\d{4}$/.test(dDad)) {
-                        dadBlock.classList.remove('hidden');
-                        const pDad = calculateNumerology(dDad);
-                        document.getElementById('kidsDadFate').textContent = `(ЧС: ${pDad.fateNumber})`;
-
-                        const dadList = document.getElementById('kidsDadText');
-                        dadList.innerHTML = '';
-                        const dItems = [];
-                        const f1 = pDad.matrix[1];
-
-                        if (c1 > 2 && f1 > 2) dItems.push("Борьба характеров: Папе важно проявлять мудрость и терпение, не 'ломать' волю ребенка.");
-                        else if (c1 <= 2 && f1 > 2) dItems.push("Авторитет: Папа для ребенка — беспрекословный пример и защита.");
-                        else dItems.push("Теплый контакт: Папа может стать лучшим другом и наставником.");
-
-                        dItems.forEach(txt => {
-                            const li = document.createElement('li');
-                            li.textContent = txt;
-                            dadList.appendChild(li);
-                        });
-                    } else {
-                        dadBlock.classList.add('hidden');
-                    }
-
-                    renderCTA(kidsResult);
-                    closeModal();
-                    kidsResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
+                renderCTA(resultBlock);
+                closeModal();
+                resultBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // ---------- Дети ----------
+        } else if (formType === 'kidsFormContainer') {
+            const inputs = modalBody.querySelectorAll('input');
+            const dChild = inputs[0] ? inputs[0].value : '';
+            const dMom = inputs[1] ? inputs[1].value : '';
+            const dDad = inputs[2] ? inputs[2].value : '';
+            const errChild = validateDate(dChild);
+            const errMom = validateDate(dMom);
+            if (errChild || errMom) {
+                const msgs = [];
+                if (errChild) msgs.push('Ребёнок: ' + errChild);
+                if (errMom) msgs.push('Мама: ' + errMom);
+                showModalError(msgs.join(' | '));
+                return;
+            }
+            if (dDad && dDad.length === 10) {
+                const errDad = validateDate(dDad);
+                if (errDad) { showModalError('Папа: ' + errDad); return; }
+            }
+            const pChild = calculateNumerology(dChild);
+            const pMom = calculateNumerology(dMom);
+            const kidsResult = document.getElementById('kidsResult');
+            if (kidsResult) {
+                kidsResult.classList.remove('hidden');
+                document.getElementById('kidsChildFate').textContent = `(ЧС: ${pChild.fateNumber})`;
+                const c1 = pChild.matrix[1];
+                document.getElementById('kidsChildText').textContent =
+                    (c1 > 2) ? "Яркий характер. Этот ребенок — будущий лидер, стремится к самостоятельности."
+                        : "Мягкий характер. Добрый, исполнительный ребенок, избегает конфликтов.";
+                document.getElementById('kidsMomFate').textContent = `(ЧС: ${pMom.fateNumber})`;
+                const momList = document.getElementById('kidsMomText');
+                momList.innerHTML = '';
+                const m1 = pMom.matrix[1];
+                const mItems = [];
+                if (c1 > 2 && m1 > 2) mItems.push("Два лидера: Не давите авторитетом, учитесь договариваться как с равным.");
+                else if (c1 <= 2 && m1 > 2) mItems.push("Гармония: Мама-лидер легко направляет ребенка, он чувствует опору.");
+                else if (c1 > 2 && m1 <= 2) mItems.push("Внимание: Ребенок может манипулировать. Важно мягко, но твердо держать границы.");
+                else mItems.push("Дружеский союз: Отношения строятся на доверии и мягкости.");
+                const c2 = pChild.matrix[2], m2 = pMom.matrix[2];
+                if (m2 < 2 && c2 > 2) mItems.push("Энергия: Ребенок — 'ураган'. Маме важно находить время на отдых, чтобы не выгорать.");
+                else if (m2 > 2 && c2 < 2) mItems.push("Поддержка: Мама служит энергетическим донором, рядом с ней ребенок успокаивается.");
+                mItems.forEach(txt => { const li = document.createElement('li'); li.textContent = txt; momList.appendChild(li); });
+                const dadBlock = document.getElementById('kidsDadBlock');
+                if (dDad && validateDate(dDad) === null) {
+                    dadBlock.classList.remove('hidden');
+                    const pDad = calculateNumerology(dDad);
+                    document.getElementById('kidsDadFate').textContent = `(ЧС: ${pDad.fateNumber})`;
+                    const dadList = document.getElementById('kidsDadText');
+                    dadList.innerHTML = '';
+                    const f1 = pDad.matrix[1];
+                    const dItems = [];
+                    if (c1 > 2 && f1 > 2) dItems.push("Борьба характеров: Папе важно проявлять мудрость и терпение, не 'ломать' волю ребенка.");
+                    else if (c1 <= 2 && f1 > 2) dItems.push("Авторитет: Папа для ребенка — беспрекословный пример и защита.");
+                    else dItems.push("Теплый контакт: Папа может стать лучшим другом и наставником.");
+                    dItems.forEach(txt => { const li = document.createElement('li'); li.textContent = txt; dadList.appendChild(li); });
+                } else {
+                    dadBlock.classList.add('hidden');
+                }
+                renderCTA(kidsResult);
+                closeModal();
+                kidsResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
     });
