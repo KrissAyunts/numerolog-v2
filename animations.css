@@ -1,0 +1,417 @@
+/* ============================================================
+   NUMEROLOG V2 — Enhanced Animations & Styles
+   ============================================================ */
+
+/* ---- Starfield Canvas -------------------------------------- */
+#starCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ---- Scroll Reveal ---------------------------------------- */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s cubic-bezier(.22, .68, 0, 1.3), transform 0.7s cubic-bezier(.22, .68, 0, 1.3);
+}
+
+[data-reveal="left"] {
+    transform: translateX(-50px);
+}
+
+[data-reveal="right"] {
+    transform: translateX(50px);
+}
+
+[data-reveal="scale"] {
+    transform: scale(0.85);
+}
+
+[data-reveal].revealed {
+    opacity: 1;
+    transform: translate(0) scale(1);
+}
+
+/* stagger children */
+[data-reveal-delay="1"] {
+    transition-delay: 0.1s;
+}
+
+[data-reveal-delay="2"] {
+    transition-delay: 0.2s;
+}
+
+[data-reveal-delay="3"] {
+    transition-delay: 0.3s;
+}
+
+[data-reveal-delay="4"] {
+    transition-delay: 0.4s;
+}
+
+[data-reveal-delay="5"] {
+    transition-delay: 0.5s;
+}
+
+/* ---- Enhanced Hero Section -------------------------------- */
+.hero-section {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: clamp(2.8rem, 5vw, 4.2rem) !important;
+    background: linear-gradient(135deg, #fff 20%, #c4b5fd 60%, #67e8f9) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: shimmer 4s linear infinite;
+    background-size: 200% auto !important;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+/* ---- Typing cursor ---------------------------------------- */
+#typingText::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+    color: #8b5cf6;
+    font-weight: 300;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ---- Enhanced Hero Image ---------------------------------- */
+.hero-image img {
+    border-radius: 32px !important;
+    border: 2px solid rgba(139, 92, 246, 0.5) !important;
+    box-shadow:
+        0 0 0 1px rgba(139, 92, 246, 0.2),
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 80px rgba(139, 92, 246, 0.25) !important;
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+
+.hero-image img:hover {
+    box-shadow:
+        0 0 0 2px rgba(139, 92, 246, 0.5),
+        0 25px 70px rgba(0, 0, 0, 0.6),
+        0 0 120px rgba(139, 92, 246, 0.4) !important;
+}
+
+/* ---- Pulse badge (99%) ------------------------------------ */
+.hero-badge {
+    animation: pulseBadge 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseBadge {
+
+    0%,
+    100% {
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 14px 40px rgba(139, 92, 246, 0.85), 0 0 40px rgba(6, 182, 212, 0.4);
+    }
+}
+
+/* ---- Section headings enhanced ---------------------------- */
+.section-content h2 {
+    background: linear-gradient(135deg, #fff, #c4b5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-content h2 .highlight {
+    background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Override icon color since gradient kills it */
+.section-icon {
+    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.7));
+}
+
+/* ---- Feature list enhanceed checkmarks -------------------- */
+.features-list li::before {
+    content: '✦';
+    color: var(--accent-primary);
+    margin-right: 0.5rem;
+    font-size: 0.8em;
+}
+
+.features-list li {
+    padding-left: 0 !important;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    transition: color 0.3s ease;
+}
+
+.features-list li:hover {
+    color: #fff;
+}
+
+/* ---- Decorative matrix visual (right side of sections) ---- */
+.section-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deco-matrix {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap: 8px;
+}
+
+.deco-matrix .dm-cell {
+    border-radius: 14px;
+    background: var(--glass-bg);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.12);
+    transition: all 0.4s ease;
+    animation: deco-pulse 3s ease-in-out infinite;
+}
+
+.deco-matrix .dm-cell:nth-child(odd) {
+    animation-delay: 0.3s;
+}
+
+.deco-matrix .dm-cell:nth-child(3n) {
+    animation-delay: 0.6s;
+}
+
+.deco-matrix .dm-cell[data-highlight] {
+    color: var(--accent-primary);
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+}
+
+@keyframes deco-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.04);
+    }
+}
+
+/* ---- Heart animation for compatibility -------------------- */
+.deco-hearts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.deco-hearts .heart-ring {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deco-hearts .heart-ring::before {
+    content: '♥';
+    font-size: 80px;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: heartbeat 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 16px rgba(236, 72, 153, 0.6));
+}
+
+@keyframes heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    14% {
+        transform: scale(1.15);
+    }
+
+    28% {
+        transform: scale(1);
+    }
+
+    42% {
+        transform: scale(1.08);
+    }
+
+    70% {
+        transform: scale(1);
+    }
+}
+
+.orbit-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px dashed rgba(139, 92, 246, 0.35);
+    animation: orbit-spin 8s linear infinite;
+}
+
+@keyframes orbit-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.orbit-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px var(--accent-primary);
+}
+
+/* ---- Stat counter blocks (about section) ------------------ */
+.stat {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 16px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 0 rgba(139, 92, 246, 0);
+}
+
+.stat:hover {
+    transform: translateY(-6px) scale(1.04);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.35);
+}
+
+.stat-number {
+    background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ---- Enhanced Glassmorphism panels ------------------------ */
+.glass-panel {
+    background: rgba(20, 30, 50, 0.65) !important;
+    backdrop-filter: blur(20px) saturate(1.4) !important;
+    border: 1px solid rgba(139, 92, 246, 0.2) !important;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    transition: background 0.3s ease;
+}
+
+/* ---- Enhanced Buttons ------------------------------------- */
+.hero-cta,
+.form-toggle-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple-wave {
+    position: absolute;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple-expand 0.7s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-expand {
+    to {
+        transform: scale(40);
+        opacity: 0;
+    }
+}
+
+/* ---- Footer glow cards ------------------------------------ */
+.contact-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+.contact-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.contact-card:hover::before {
+    opacity: 1;
+}
+
+.contact-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.45) !important;
+    border-color: rgba(139, 92, 246, 0.6) !important;
+}
+
+/* ---- Navbar glow on scroll -------------------------------- */
+.glass-nav.scrolled {
+    background: rgba(10, 15, 30, 0.97) !important;
+    box-shadow: 0 2px 20px rgba(139, 92, 246, 0.2);
+}
+
+/* ---- Matrix cells enhanced -------------------------------- */
+.matrix-cell {
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.matrix-cell:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.4) !important;
+    border-color: rgba(139, 92, 246, 0.5) !important;
+}

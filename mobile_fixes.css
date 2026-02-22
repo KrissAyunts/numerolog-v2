@@ -1,0 +1,29 @@
+/* Mobile Fixes for Headers and Icons */
+@media (max-width: 600px) {
+    .section-content h2 {
+        font-size: 1.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .section-content h2 svg {
+        display: block;
+    }
+
+    .section-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 0;
+    }
+
+    #compatResult h3 {
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+}

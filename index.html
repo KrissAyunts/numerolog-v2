@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нумерологический Калькулятор | Матрица Пифагора</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile_fixes.css">
+    <link rel="stylesheet" href="animations.css">
+    <meta name="description"
+        content="Рассчитайте свою психоматрицу по дате рождения. Точный нумерологический расчет квадрата Пифагора.">
+</head>
+
+<body>
+    <!-- Starfield Canvas -->
+    <canvas id="starCanvas"></canvas>
+
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+        <div class="globe globe-3"></div>
+    </div>
+
+    <nav class="glass-nav" id="mainNav">
+        <div class="nav-container">
+            <div class="logo">Узнай <span class="highlight">Себя</span></div>
+            <button class="nav-toggle" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero">Главная</a></li>
+                <li><a href="#matrixSection">Матрица</a></li>
+                <li><a href="#compatibilitySection">Совместимость</a></li>
+                <li><a href="#kidsSection">Дети</a></li>
+                <li><a href="#aboutSection">Обо мне</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <div class="hero-text" data-reveal="left">
+                    <h1 class="hero-title">Раскрой свой <span class="highlight">потенциал</span><br>через психоанализ и
+                        нумерологию</h1>
+                    <p class="hero-subtitle">Метод Статистического Психоанализа с точностью 99%</p>
+                    <p class="hero-description">Узнайте свои сильные стороны, совместимость с близкими и раскройте
+                        данные природой возможности через Квадрат Пифагора</p>
+                    <a href="#matrixSection" class="hero-cta">Рассчитать матрицу</a>
+                </div>
+                <div class="hero-image" data-reveal="right">
+                    <img src="./olga-photo.jpg" alt="Кристина Аюнц" />
+                    <div class="hero-badge">
+                        <span>99%</span>
+                        <small>точность метода</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Matrix Calculator Section -->
+        <section id="matrixSection" class="page-section section-left">
+            <div class="section-grid">
+                <div class="section-content" data-reveal="left">
+                    <h2>
+                        <svg class="section-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" />
+                            <rect x="14" y="3" width="7" height="7" />
+                            <rect x="14" y="14" width="7" height="7" />
+                            <rect x="3" y="14" width="7" height="7" />
+                        </svg>
+                        Расчет <span class="highlight">Матрицы</span>
+                    </h2>
+                    <p>В матрице человека много показателей, понимая которые, каждый может реализовать возможности,
+                        данные природой. Реализация потенциала – ключ ко всем благам.</p>
+                    <ul class="features-list">
+                        <li>Анализ 9 ключевых качеств</li>
+                        <li>Дополнительные числа судьбы</li>
+                        <li>Линии и диагонали влияния</li>
+                    </ul>
+                    <button class="form-toggle-btn" onclick="toggleForm('matrixFormContainer')">
+                        Рассчитать матрицу
+                    </button>
+                </div>
+
+                <!-- Decorative matrix visual -->
+                <div class="section-visual" data-reveal="right" data-reveal-delay="2">
+                    <div class="deco-matrix">
+                        <div class="dm-cell">1</div>
+                        <div class="dm-cell" data-highlight>7</div>
+                        <div class="dm-cell">4</div>
+                        <div class="dm-cell" data-highlight>5</div>
+                        <div class="dm-cell">3</div>
+                        <div class="dm-cell" data-highlight>1</div>
+                        <div class="dm-cell">2</div>
+                        <div class="dm-cell" data-highlight>6</div>
+                        <div class="dm-cell">8</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden Form -->
+            <div id="matrixFormContainer" class="form-container hidden">
+                <div class="calculator-card glass-panel">
+                    <form id="calcForm">
+                        <div class="input-group">
+                            <label for="birthdate">Дата рождения</label>
+                            <input type="text" id="birthdate" placeholder="ДД.ММ.ГГГГ" inputmode="numeric"
+                                maxlength="10">
+                            <span class="error-message" id="dateError"></span>
+                        </div>
+                        <button type="submit" class="cta-button">Рассчитать</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="resultSection" class="result-section hidden">
+                <div class="numbers-summary glass-panel">
+                    <h3>Дополнительные числа</h3>
+                    <div class="add-numbers" id="addNumbers"></div>
+                    <div class="fate-number">
+                        <span>Число судьбы:</span>
+                        <strong id="fateNumber">-</strong>
+                    </div>
+                </div>
+                <div class="matrix-grid" id="matrixGrid"></div>
+            </div>
+        </section>
+
+        <!-- Compatibility Section -->
+        <section id="compatibilitySection" class="page-section section-right">
+            <div class="section-grid">
+                <!-- Decorative hearts visual -->
+                <div class="section-visual" data-reveal="left" data-reveal-delay="2">
+                    <div class="deco-hearts">
+                        <div class="heart-ring">
+                            <div class="orbit-ring">
+                                <div class="orbit-dot"></div>
+                            </div>
+                        </div>
+                        <p
+                            style="color: var(--text-secondary); font-size:0.85rem; letter-spacing:0.15em; text-transform:uppercase;">
+                            Энергетический анализ</p>
+                    </div>
+                </div>
+
+                <div class="section-content" data-reveal="right">
+                    <h2>
+                        <svg class="section-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                            </path>
+                        </svg>
+                        Совместимость <span class="highlight">Пары</span>
+                    </h2>
+                    <p>👉 Анализ отношений, точки соприкосновений и точки совместного роста, улучшение качества
+                        совместной жизни, урегулирование конфликтов и четкие рекомендации по взращиванию любви и
+                        уважения между партнерами</p>
+                    <ul class="features-list">
+                        <li>Энергетическая совместимость</li>
+                        <li>Общие ценности и цели</li>
+                        <li>Взаимопонимание и коммуникация</li>
+                    </ul>
+                    <button class="form-toggle-btn" onclick="toggleForm('compatFormContainer')">
+                        Рассчитать совместимость
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hidden Form -->
+            <div id="compatFormContainer" class="form-container hidden">
+                <div class="calculator-card glass-panel">
+                    <form id="compatForm">
+                        <div class="input-group">
+                            <label>Ваша дата рождения</label>
+                            <input type="text" name="my_birthdate" class="date-input" placeholder="ДД.ММ.ГГГГ"
+                                autocomplete="on">
+                        </div>
+                        <div class="input-group">
+                            <label>Дата рождения партнера</label>
+                            <input type="text" name="partner_birthdate" class="date-input" placeholder="ДД.ММ.ГГГГ"
+                                autocomplete="on">
+                        </div>
+                        <button type="submit" class="cta-button">Рассчитать Совместимость</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="compatResult" class="hidden result-section">
+                <div class="compat-header">
+                    <div class="compat-circle-wrapper">
+                        <div class="compat-score-circle">
+                            <span id="compatScoreValue">0%</span>
+                        </div>
+                        <span class="compat-label">Совместимость</span>
+                    </div>
+                </div>
+                <div id="compatDetailsGrid" class="compat-details"></div>
+            </div>
+        </section>
+
+        <!-- Kids Section -->
+        <section id="kidsSection" class="page-section section-left">
+            <div class="section-grid">
+                <div class="section-content" data-reveal="left">
+                    <h2>
+                        <svg class="section-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Дети и <span class="highlight">Родители</span>
+                    </h2>
+                    <p>Гармония в семье через понимание. Анализ потенциала ребенка и точек соприкосновения с родителями.
+                    </p>
+                    <ul class="features-list">
+                        <li>Способности</li>
+                        <li>Взаимодействие с мамой</li>
+                        <li>Взаимодействие с папой</li>
+                    </ul>
+                    <button class="form-toggle-btn" onclick="toggleForm('kidsFormContainer')">
+                        Рассчитать совместимость
+                    </button>
+                </div>
+
+                <!-- Decorative family visual -->
+                <div class="section-visual" data-reveal="right" data-reveal-delay="2">
+                    <div class="deco-matrix"
+                        style="grid-template-columns: repeat(2,90px); grid-template-rows: repeat(2,90px); gap:12px;">
+                        <div class="dm-cell" data-highlight style="font-size:2.5rem;">👶</div>
+                        <div class="dm-cell" style="font-size:2.5rem;">👩</div>
+                        <div class="dm-cell" style="font-size:2.5rem;">👨</div>
+                        <div class="dm-cell" data-highlight style="font-size:1.5rem; color:rgba(139,92,246,0.7);">♾️
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden Form -->
+            <div id="kidsFormContainer" class="form-container hidden">
+                <div class="calculator-card glass-panel">
+                    <form id="kidsForm">
+                        <div class="input-group">
+                            <label>Дата рождения ребенка</label>
+                            <input type="text" name="child_dob" class="date-input" placeholder="ДД.ММ.ГГГГ"
+                                autocomplete="on">
+                        </div>
+                        <div class="input-group">
+                            <label>Дата рождения мамы</label>
+                            <input type="text" name="mom_dob" class="date-input" placeholder="ДД.ММ.ГГГГ"
+                                autocomplete="on">
+                        </div>
+                        <div class="input-group">
+                            <label>Дата рождения папы (опционально)</label>
+                            <input type="text" name="dad_dob" class="date-input" placeholder="ДД.ММ.ГГГГ"
+                                autocomplete="on">
+                        </div>
+                        <button type="submit" class="cta-button">Рассчитать</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Kids Results -->
+            <div id="kidsResult" class="hidden result-section">
+                <div class="kids-grid">
+                    <div class="kids-card">
+                        <div class="card-header">
+                            <h4>Ребенок</h4>
+                            <span id="kidsChildFate" class="fate-badge"></span>
+                        </div>
+                        <p id="kidsChildText"></p>
+                    </div>
+                    <div class="kids-card">
+                        <div class="card-header">
+                            <h4>Взаимодействие с Мамой</h4>
+                            <span id="kidsMomFate" class="fate-badge"></span>
+                        </div>
+                        <ul id="kidsMomText" class="analysis-list"></ul>
+                    </div>
+                    <div id="kidsDadBlock" class="kids-card hidden">
+                        <div class="card-header">
+                            <h4>Взаимодействие с Папой</h4>
+                            <span id="kidsDadFate" class="fate-badge"></span>
+                        </div>
+                        <ul id="kidsDadText" class="analysis-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="aboutSection" class="page-section about-section">
+            <div class="about-wrapper" data-reveal="scale">
+                <div class="about-content glass-panel">
+                    <div class="about-image">
+                        <img src="./kristina_2.jpg" alt="Кристина Аюнц" />
+                    </div>
+                    <div class="about-text">
+                        <h3 class="about-title">Помогающий Специалист<br>Кристина Аюнц</h3>
+                        <p class="about-methods-label">Практикую методики:</p>
+                        <ul class="about-methods-list">
+                            <li data-reveal data-reveal-delay="1">Статистический психоанализ</li>
+                            <li data-reveal data-reveal-delay="2">Метафорические карты</li>
+                            <li data-reveal data-reveal-delay="3">Психологические игры</li>
+                            <li data-reveal data-reveal-delay="4">Разговорная терапия</li>
+                        </ul>
+                        <p><strong>Точность метода составляет 99%.</strong></p>
+                        <div class="about-stats">
+                            <div class="stat" data-reveal data-reveal-delay="1">
+                                <span class="stat-number" data-count="1000" data-suffix="+">1000+</span>
+                                <span class="stat-label">консультаций</span>
+                            </div>
+                            <div class="stat" data-reveal data-reveal-delay="2">
+                                <span class="stat-number" data-count="99" data-suffix="%">99%</span>
+                                <span class="stat-label">точность</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-contacts">
+                <!-- Telegram Channel -->
+                <a href="https://t.me/+hxRv5po9kPYzMzIy" target="_blank" class="contact-card monitor-glow" data-reveal
+                    data-reveal-delay="1">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-8.609 3.33c-2.068.8-4.133 1.598-5.724 2.21a405.15 405.15 0 0 1-2.849 1.09c-.42.147-.99.332-1.473.901-.728.968.193 1.798.919 2.286 1.61.516 3.275 1.009 4.654 1.472.509 1.793.997 3.592 1.48 5.388.16.69.506 1.287.961 1.274.567-.015.655-.262.883-.751.27-.674.542-1.348.813-2.023.755.753 1.513 1.503 2.268 2.256.495.495 1.055 1.047 1.77.893.759-.163.926-.973 1.107-1.683 1.107-4.329 2.193-8.663 3.327-13.048.245-.953-.664-1.616-1.505-1.52z">
+                        </path>
+                    </svg>
+                    <span>Telegram канал</span>
+                </a>
+
+                <!-- Telegram Personal -->
+                <a href="https://t.me/psy_kriss" target="_blank" class="contact-card monitor-glow" data-reveal
+                    data-reveal-delay="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                    </svg>
+                    <span>Написать в Telegram</span>
+                </a>
+
+                <!-- Instagram -->
+                <a href="https://instagram.com/Psy_kriss" target="_blank" class="contact-card monitor-glow" data-reveal
+                    data-reveal-delay="3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                    <span>Instagram</span>
+                </a>
+
+                <!-- WhatsApp -->
+                <a href="https://wa.me/79260020848" target="_blank" class="contact-card monitor-glow" data-reveal
+                    data-reveal-delay="4">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                        </path>
+                    </svg>
+                    <span>WhatsApp</span>
+                </a>
+            </div>
+            <p class="footer-note">Школа Узнай Себя © 2026</p>
+        </div>
+    </footer>
+
+    <!-- Modal Window -->
+    <div id="formModal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="modal-close">&times;</span>
+            <h3 id="modalTitle">Заполните данные</h3>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script type="module" src="./script.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
+        }, { passive: true });
+    </script>
+    <script src="./animations.js" defer></script>
+</body>
+
+</html>
