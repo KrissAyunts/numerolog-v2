@@ -1579,34 +1579,52 @@ input:-webkit-autofill:active {
     border-color: rgba(255, 255, 255, 0.08);
 }
 
-.matrix-top-info {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+.matrix-top-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
-.info-item {
-    flex: 1;
+.info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 15px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 80px;
     text-align: center;
 }
 
-.info-item span {
-    font-size: 0.65rem;
-    color: var(--text-secondary);
-    margin-bottom: 2px;
+.info-card.wide {
+    grid-column: span 2;
+    min-height: 70px;
 }
 
-.info-item strong {
-    font-size: 1rem;
+.card-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.card-value {
+    font-size: 1.25rem;
     color: var(--highlight);
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif !important;
+}
+
+@media (max-width: 480px) {
+    .matrix-top-cards { gap: 6px; }
+    .info-card { min-height: 70px; padding: 12px 5px; }
+    .card-value { font-size: 1.1rem; }
 }
 
 .matrix-bottom-field {

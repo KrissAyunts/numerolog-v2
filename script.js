@@ -260,18 +260,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // Top Info: Additional Numbers, Fate, Temperament
         const nums = data.additionalNumbers;
         const topInfoHTML = `
-            <div class="matrix-top-info">
-                <div class="info-item">
-                    <span>Доп. числа:</span>
-                    <strong>${nums[0]}, ${nums[1]}, ${nums[2]}, ${nums[3]}</strong>
+            <div class="matrix-top-cards">
+                <div class="info-card wide">
+                    <span class="card-label">Доп. числа</span>
+                    <strong class="card-value">${nums[0]}, ${nums[1]}, ${nums[2]}, ${nums[3]}</strong>
                 </div>
-                <div class="info-item">
-                    <span>Число судьбы:</span>
-                    <strong>${data.fateNumber}</strong>
+                <div class="info-card">
+                    <span class="card-label">Число судьбы</span>
+                    <strong class="card-value">${data.fateNumber}</strong>
                 </div>
-                <div class="info-item">
-                    <span>Темперамент:</span>
-                    <strong>${data.lines.temperament}</strong>
+                <div class="info-card">
+                    <span class="card-label">Темперамент</span>
+                    <strong class="card-value">${data.lines.temperament}</strong>
                 </div>
             </div>
         `;
