@@ -1514,10 +1514,7 @@ input:-webkit-autofill:active {
 .grid-4-cols {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 0 !important;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    overflow: hidden;
+    gap: 8px !important;
     margin-bottom: 0 !important;
 }
 
@@ -1527,7 +1524,9 @@ input:-webkit-autofill:active {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
     position: relative;
     padding: 10px;
 }
@@ -1535,7 +1534,7 @@ input:-webkit-autofill:active {
 .matrix-cell::before {
     content: attr(data-label);
     position: absolute;
-    top: 5px;
+    top: 8px;
     font-size: 0.65rem;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -1553,17 +1552,18 @@ input:-webkit-autofill:active {
 }
 
 .cell-line {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .matrix-top-info {
     display: flex;
     justify-content: space-between;
     gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .info-item {
@@ -1588,12 +1588,11 @@ input:-webkit-autofill:active {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    margin-top: -1px; /* overlap border */
+    margin-top: 15px;
     padding: 15px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-top: none;
-    border-radius: 0 0 12px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
 }
 
 .matrix-bottom-field span {
