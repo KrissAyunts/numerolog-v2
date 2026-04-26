@@ -1510,3 +1510,103 @@ input:-webkit-autofill:active {
         opacity: 1;
     }
 }
+/* --- New Matrix Styles (4 columns) --- */
+.grid-4-cols {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0 !important;
+}
+
+.matrix-cell {
+    aspect-ratio: 1/1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    padding: 10px;
+}
+
+.matrix-cell::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 5px;
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cell-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.cell-empty {
+    color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.cell-line {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.matrix-top-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.info-item span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.info-item strong {
+    font-size: 1.1rem;
+    color: var(--highlight);
+}
+
+.matrix-bottom-field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: -1px; /* overlap border */
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.matrix-bottom-field span {
+    color: var(--text-secondary);
+}
+
+.matrix-bottom-field strong {
+    font-size: 1.3rem;
+    color: var(--highlight);
+}
+
+@media (max-width: 480px) {
+    .cell-value { font-size: 1.1rem; }
+    .matrix-cell::before { font-size: 0.55rem; }
+    .matrix-top-info { flex-direction: column; gap: 10px; }
+}
