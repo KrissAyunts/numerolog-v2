@@ -283,6 +283,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // Grid Reconstruction (4 columns)
         matrixGrid.innerHTML = '';
         matrixGrid.className = 'matrix-grid grid-4-cols';
+        
+        // Add Matrix Title
+        const mTitle = document.createElement('div');
+        mTitle.className = 'matrix-title';
+        mTitle.textContent = 'Квадрат Пифагора';
+        matrixGrid.before(mTitle);
+        
+        // Remove old title if exists
+        const oldTitles = resultSection.querySelectorAll('.matrix-title');
+        if (oldTitles.length > 1) {
+            for(let i=0; i < oldTitles.length - 1; i++) oldTitles[i].remove();
+        }
 
         // Order of cells in the 4-column grid (Row by Row)
         // Row 1: 1, 4, 7, Goal
