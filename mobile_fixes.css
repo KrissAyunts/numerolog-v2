@@ -9,90 +9,28 @@
     .hero-content {
         grid-template-columns: 1fr !important;
         gap: 2rem !important;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
     }
 
     .hero-text {
-        order: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-    }
-
-    .hero-image {
-        order: 2;
-    }
-
-    /* Hero — заголовок не вылезает за экран */
-    .hero-title {
-        font-size: clamp(2rem, 8vw, 3rem) !important;
-        line-height: 1.25 !important;
-    }
-
-    /* Hero — фото меньше */
-    .hero-image {
-        width: 100%;
-        max-width: 300px !important;
-        margin: 0 auto;
-    }
-
-    .hero-image img {
+        order: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
         width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 auto;
-        display: block;
+        text-align: center !important;
     }
 
-    /* Hero — бейдж 99% внутри блока */
-    .hero-badge {
-        position: relative !important;
-        bottom: auto !important;
-        right: auto !important;
-        display: inline-block;
-        margin: 1rem auto 0;
-    }
-
-    /* Секции — одна колонка */
-    .section-grid {
-        grid-template-columns: 1fr !important;
-        direction: ltr !important;
-        gap: 2rem !important;
-    }
-
-    /* Декоративные элементы справа — скрыть на мобиле */
-    .section-visual {
-        display: none !important;
-    }
-
-    /* Заголовки секций — центр и меньше */
-    .section-content h2 {
-        font-size: 1.8rem !important;
-        justify-content: flex-start;
-        gap: 0.6rem;
-    }
-
-    .section-icon {
-        width: 28px !important;
-        height: 28px !important;
-    }
-
-    /* Отступы секций */
-    .page-section {
-        margin-bottom: 5rem !important;
-    }
-
-    .container {
-        padding: 1.2rem !important;
-    }
-
-    /* CTA кнопка — на всю ширину */
+    /* CTA кнопка — центрирование */
     .hero-cta {
-        display: block !important;
-        text-align: center;
+        display: inline-block !important;
+        margin: 0 auto !important;
+        width: auto !important;
+        max-width: 90% !important;
     }
 
     /* Форма — на всю ширину */
