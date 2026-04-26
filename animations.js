@@ -92,15 +92,11 @@
             ctx.beginPath();
             ctx.arc(s.x, drawY, s.r, 0, Math.PI * 2);
 
-            if (s.r > 1.2) {
-                // Яркие звёзды — с лёгким свечением
-                const grd = ctx.createRadialGradient(s.x, drawY, 0, s.x, drawY, s.r * 3);
-                grd.addColorStop(0, `hsla(${s.hue}, ${s.sat}%, 95%, ${alpha})`);
-                grd.addColorStop(1, `hsla(${s.hue}, ${s.sat}%, 80%, 0)`);
-                ctx.fillStyle = grd;
-                ctx.arc(s.x, drawY, s.r * 3, 0, Math.PI * 2);
+            if (s.r > 1.3) {
+                // Только для самых больших звезд — лёгкое свечение
+                ctx.fillStyle = `hsla(${s.hue}, ${s.sat}%, 95%, ${alpha})`;
             } else {
-                ctx.fillStyle = `hsla(${s.hue}, ${s.sat}%, 90%, ${alpha})`;
+                ctx.fillStyle = `hsla(${s.hue}, ${s.sat}%, 85%, ${alpha})`;
             }
             ctx.fill();
         });
@@ -139,9 +135,9 @@
     }
 
     resize();
-    initStars(220);
+    initStars(80);
     requestAnimationFrame(draw);
-    window.addEventListener('resize', () => { resize(); initStars(220); });
+    window.addEventListener('resize', () => { resize(); initStars(80); });
 })();
 
 
@@ -259,21 +255,9 @@ document.querySelectorAll('.hero-cta, .form-toggle-btn, .cta-button').forEach(bt
 })();
 
 
-/* ---- 8. Glow-follow cursor for glass panels ---------------- */
+/* ---- 8. Glow-follow cursor for glass panels (Disabled for performance) ---- */
+/*
 (function cursorGlow() {
-    document.querySelectorAll('.glass-panel').forEach(panel => {
-        panel.addEventListener('mousemove', (e) => {
-            const rect = panel.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            panel.style.background = `
-        radial-gradient(200px circle at ${x}px ${y}px,
-          rgba(139,92,246,0.13), transparent 65%),
-        rgba(30, 41, 59, 0.7)
-      `;
-        });
-        panel.addEventListener('mouseleave', () => {
-            panel.style.background = '';
-        });
-    });
+...
 })();
+*/
