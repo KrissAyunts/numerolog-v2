@@ -252,33 +252,15 @@ document.addEventListener('DOMContentLoaded', () => {
             1: 'Характер', 2: 'Энергия', 3: 'Интерес',
             4: 'Здоровье', 5: 'Логика', 6: 'Труд',
             7: 'Удача', 8: 'Долг', 9: 'Память',
-            'goal': 'Цель', 'family': 'Семья', 'habits': 'Привычки'
+            'goal': 'Цель', 'family': 'Семья', 'habits': 'Привычки',
+            'fate': 'Число судьбы', 'temp': 'Темперамент', 'add': 'Доп. числа', 'life': 'Быт'
         };
 
         resultSection.classList.remove('hidden');
 
-        // Top Info: Additional Numbers, Fate, Temperament
-        const nums = data.additionalNumbers;
-        const topInfoHTML = `
-            <div class="matrix-top-cards">
-                <div class="info-card wide">
-                    <span class="card-label">Доп. числа</span>
-                    <strong class="card-value">${nums[0]}, ${nums[1]}, ${nums[2]}, ${nums[3]}</strong>
-                </div>
-                <div class="info-card">
-                    <span class="card-label">Число судьбы</span>
-                    <strong class="card-value">${data.fateNumber}</strong>
-                </div>
-                <div class="info-card">
-                    <span class="card-label">Темперамент</span>
-                    <strong class="card-value">${data.lines.temperament}</strong>
-                </div>
-            </div>
-        `;
-
-        // Clear and rebuild summary
+        // Clear top summary (now everything is in the grid)
         const summaryEl = resultSection.querySelector('.numbers-summary');
-        summaryEl.innerHTML = topInfoHTML;
+        if (summaryEl) summaryEl.innerHTML = '';
 
         // Grid Reconstruction (4 columns)
         matrixGrid.innerHTML = '';
@@ -290,25 +272,41 @@ document.addEventListener('DOMContentLoaded', () => {
         mTitle.textContent = 'Квадрат Пифагора';
         matrixGrid.before(mTitle);
         
-        // Remove old title if exists
         const oldTitles = resultSection.querySelectorAll('.matrix-title');
         if (oldTitles.length > 1) {
             for(let i=0; i < oldTitles.length - 1; i++) oldTitles[i].remove();
         }
 
-        // Order of cells in the 4-column grid (Row by Row)
-        // Row 1: 1, 4, 7, Goal
-        // Row 2: 2, 5, 8, Family
-        // Row 3: 3, 6, 9, Habits
-        const cells = [
+        // Define unified grid structure
+        const gridConfig = [
+            // Row 0: Top Info
+            { id: 'add', type: 'info', value: data.additionalNumbers.join(', '), span: 2 },
+            { id: 'fate', type: 'info', value: data.fateNumber },
+            { id: 'temp', type: 'info', value: data.lines.temperament },
+            
+            // Row 1-3: Main Matrix
             { id: 1, type: 'digit' }, { id: 4, type: 'digit' }, { id: 7, type: 'digit' }, { id: 'goal', type: 'line' },
             { id: 2, type: 'digit' }, { id: 5, type: 'digit' }, { id: 8, type: 'digit' }, { id: 'family', type: 'line' },
-            { id: 3, type: 'digit' }, { id: 6, type: 'digit' }, { id: 9, type: 'digit' }, { id: 'habits', type: 'line' }
+            { id: 3, type: 'digit' }, { id: 6, type: 'digit' }, { id: 9, type: 'digit' }, { id: 'habits', type: 'line' },
+            
+            // Row 4: Bottom
+            { id: 'empty', type: 'empty' },
+            { id: 'life', type: 'info', value: data.lines.life },
+            { id: 'empty', type: 'empty' },
+            { id: 'empty', type: 'empty' }
         ];
 
-        cells.forEach(item => {
+        gridConfig.forEach(item => {
+            if (item.id === 'empty') {
+                const empty = document.createElement('div');
+                empty.className = 'matrix-cell cell-hidden';
+                matrixGrid.appendChild(empty);
+                return;
+            }
+
             const cell = document.createElement('div');
             cell.className = 'matrix-cell';
+            if (item.span) cell.style.gridColumn = `span ${item.span}`;
             
             let valueStr = '-';
             let label = matrixLabels[item.id];
@@ -317,13 +315,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const count = data.matrix[item.id];
                 valueStr = count > 0 ? String(item.id).repeat(count) : '-';
                 if (count === 0) cell.classList.add('cell-empty');
-            } else {
+            } else if (item.type === 'line') {
                 valueStr = data.lines[item.id];
                 cell.classList.add('cell-line');
+            } else if (item.type === 'info') {
+                valueStr = item.value;
+                cell.classList.add('cell-info');
             }
 
             cell.setAttribute('data-label', label);
-            
             const valueEl = document.createElement('div');
             valueEl.className = 'cell-value';
             valueEl.textContent = valueStr;
@@ -332,17 +332,9 @@ document.addEventListener('DOMContentLoaded', () => {
             matrixGrid.appendChild(cell);
         });
 
-        // Bottom Field: Life (Быт)
-        const lifeEl = document.createElement('div');
-        lifeEl.className = 'matrix-bottom-field';
-        lifeEl.innerHTML = `<span>Быт:</span> <strong>${data.lines.life}</strong>`;
-        matrixGrid.after(lifeEl);
-        
-        // Remove old copies of lifeEl if they exist
+        // Remove old bottom field (now in grid)
         const oldBottoms = resultSection.querySelectorAll('.matrix-bottom-field');
-        if (oldBottoms.length > 1) {
-            for(let i=0; i < oldBottoms.length - 1; i++) oldBottoms[i].remove();
-        }
+        oldBottoms.forEach(b => b.remove());
 
         renderCTA(resultSection);
         resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
