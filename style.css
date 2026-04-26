@@ -20,6 +20,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -31,6 +32,7 @@ body {
     flex-direction: column;
     overflow-x: hidden;
     position: relative;
+    width: 100%;
 }
 
 /* Background Animation */
@@ -1557,13 +1559,14 @@ input:-webkit-autofill:active {
 
 .matrix-title {
     font-size: 1.4rem;
-    font-weight: 800;
+    font-weight: 900;
     color: #fff;
     text-align: center;
-    margin: 15px 0 20px 0;
+    margin: 15px 0 25px 0;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     font-family: 'Outfit', sans-serif !important;
+    text-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
 }
 
 .matrix-top-info strong, .matrix-bottom-field strong {
