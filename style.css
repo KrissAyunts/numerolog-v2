@@ -1557,8 +1557,8 @@ input:-webkit-autofill:active {
 }
 
 .cell-line {
-    background: rgba(139, 92, 246, 0.1);
-    border-color: rgba(139, 92, 246, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .matrix-top-info {
