@@ -910,4 +910,10 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(wrapper);
     }
 
+    // Attach to Hero Button
+    const heroBtn = document.getElementById('heroContactBtn');
+    if (heroBtn) {
+        heroBtn.addEventListener('click', openContactModal);
+    }
+
 });
